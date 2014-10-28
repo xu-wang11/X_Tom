@@ -1,16 +1,19 @@
 package UI;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 
 import javax.swing.JFrame;
+
+import util.Rect;
 
 public class Missile extends AirWarObject{
 
 	//导弹跟踪对象
 	private AirWarObject trackEnermy;
 
-	public Missile(JFrame _frame, Rectangle _rectangle) {
-		super(_frame, _rectangle);
+	public Missile(JFrame _frame, Point _rectangle, Rect rect) {
+		super(_frame, _rectangle, rect);
 		// TODO Auto-generated constructor stub
 	}
 

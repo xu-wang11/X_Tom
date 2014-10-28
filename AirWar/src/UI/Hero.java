@@ -1,15 +1,18 @@
 package UI;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import util.Rect;
+
 public class Hero extends AirWarObject{
 
 	
-	public Hero(JFrame _frame, Rectangle _rectangle) {
-		super(_frame, _rectangle);
+	public Hero(JFrame _frame, Point _rectangle, Rect rect) {
+		super(_frame, _rectangle, rect);
 		// TODO Auto-generated constructor stub
 	}
 

@@ -1,14 +1,22 @@
 package UI;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
-
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import util.XmlParse;
 
 /**
  * 
@@ -17,20 +25,43 @@ import javax.swing.JPanel;
  */
 public class StartPanel extends JPanel {
 	//private JButton button;
+	ImageIcon background = new ImageIcon("bg_02.jpg");
+	Image im = Toolkit.getDefaultToolkit().getImage("bg_02.jpg");
 	private Set<AirWarObject> enermies;
 	private Set<AirWarObject> bullets;
 	private Set<AirWarObject> missiles;
 	private Hero hero;
-	//当前等级
+	private XmlParse parse;
+
 	private int level;
 	private int score;
-	public StartPanel(JFrame frame)
+	public StartPanel(JFrame frame, XmlParse _parse)
 	{
+		super();
+		this.setSize(480, 800);
+		//this.setBackground(Color.black);
+		this.parse = _parse;
 		this.setLayout(null);
 		//this.setSize(400, 600);
-		frame.setSize(400, 800);
+		frame.setSize(480, 800);
+		Point rect1 = new Point();
+		rect1.x = 100;
+		rect1.y = 100;
+		
+		Hero hero = new Hero(frame, rect1, this.parse.rects.get("hero_1"));
+		hero.setBackground(Color.black);
+		hero.setBounds(0, 0, 100, 100);
+		this.add(hero);
+		JLabel label = new JLabel("hhe");
+		label.setBackground(Color.black);
+		label.setBounds(0, 0, 100, 100);
+		hero.setOpaque(false);
+		
+		this.add(label);
+		//JButton button = new JButton("hehe");
+		
 		//frame.setResizable(false);
-		//button = new JButton("游戏开始");
+		//button = new JButton("æ¸¸æˆ�å¼€å§‹");
 		//button.setBounds(150,100, 100, 40);
 		//this.add(button);
 		//this.add
@@ -38,10 +69,17 @@ public class StartPanel extends JPanel {
 	
 		
 	}
+	/**
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		//g.drawImage(im, 0, 0, null);
+		
+	}*/
 	
 	public void update()
 	{
-		//更新所有元素的位置
+	
 		Iterator it = enermies.iterator();
 		while(it.hasNext())
 		{
@@ -61,7 +99,7 @@ public class StartPanel extends JPanel {
 			obj.updateLocation();
 		}
 		hero.updateLocation();
-		//检查英雄是否和敌人相交
+	
 		it = enermies.iterator();
 		while(it.hasNext())
 		{
@@ -72,7 +110,7 @@ public class StartPanel extends JPanel {
 				return;
 			}
 		}
-		//判断子弹是否和敌人相撞
+	
 		Iterator it1 = enermies.iterator();
 		
 		while(it1.hasNext())
@@ -86,7 +124,7 @@ public class StartPanel extends JPanel {
 			}
 		}
 		
-		//判断导弹是否与敌人相交
+		
 		it1 = enermies.iterator();
 		
 		while(it1.hasNext())
@@ -100,7 +138,7 @@ public class StartPanel extends JPanel {
 			}
 		}
 		
-		//移除所有的爆炸对象，并且添加爆炸效果
+	
 		
 	}
 	

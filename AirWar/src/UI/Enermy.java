@@ -1,15 +1,19 @@
 package UI;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import util.Rect;
+
 public class Enermy extends AirWarObject {
 
-	public Enermy(JFrame _frame, Rectangle _rectangle) {
-		super(_frame, _rectangle);
+	public Enermy(JFrame _frame, Point _rectangle, Rect rect) {
+		super(_frame, _rectangle, rect);
+		
 		// TODO Auto-generated constructor stub
 	}
 

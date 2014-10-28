@@ -1,42 +1,56 @@
 package UI;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.geom.Point2D;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-//这是游戏元素的基类，每一个元素继承JLabel对象。
+import util.Rect;
+
 //
 public abstract class AirWarObject extends JLabel {
 	private JFrame frame = null;
-	//物体是否要消失
+	ImageIcon background = new ImageIcon("plane.png");
+	Image im = Toolkit.getDefaultToolkit().getImage("plane.png");
 	public boolean willDisappear = false;
 	public double speed;
 	public Point2D direction;
 	private Rectangle boundBox = new Rectangle();
+	private Point2D startPoint;
 	abstract public void updateLocation();
 	abstract protected boolean isIntersect(AirWarObject obj);
-	//判断两个元素是否相交
+	public Rect rect;
+	public void paintComponent(Graphics g)
+	{
+		super.paintComponent(g);
+		g.drawImage(im, rect.x, rect.y, rect.width, rect.height, null);
+	}
 	public boolean judgeIntersection(AirWarObject obj)
 	{
-		//首先判断包围盒是否相交
+		
 		if(this.boundBox.x +this.boundBox.width < obj.boundBox.x || this.boundBox.x > obj.boundBox.x + obj.boundBox.width ||
 				this.boundBox.y + this.boundBox.height < obj.boundBox.y || this.boundBox.y > obj.boundBox.y + obj.boundBox.height)
 			return false;
 		
-		//如果包围盒相交，更精确地判断两个物体是否相交
+	
 		return this.isIntersect(obj);
 		
 	}
-	public AirWarObject(JFrame _frame, Rectangle _rectangle) {
+	public AirWarObject(JFrame _frame, Point _rectangle, Rect imglocation) {
 		this.frame = _frame;
 		this.boundBox.x = _rectangle.x;
 		this.boundBox.y = _rectangle.y;
-		this.boundBox.width = _rectangle.width;
-		this.boundBox.height = _rectangle.height;
+		this.boundBox.width = imglocation.width;
+		this.boundBox.height = imglocation.height;
+		rect = imglocation;
+		this.setBounds(this.boundBox.x, this.boundBox.y, this.boundBox.width, this.boundBox.height);
 	}
 	public boolean judgeWillDisappear()
 	{
@@ -45,5 +59,7 @@ public abstract class AirWarObject extends JLabel {
 			return true;
 		return false;
 	}
+	
+	
 
 }
