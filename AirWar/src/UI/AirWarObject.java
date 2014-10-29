@@ -1,69 +1,58 @@
 package UI;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.geom.Point2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.File;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.imageio.ImageIO;
+
+
+import javax.swing.JPanel;
 
 import util.Rect;
-
-//
-public abstract class AirWarObject extends JLabel {
-	private JFrame frame = null;
-	ImageIcon background = new ImageIcon("plane.png");
-	Image im = Toolkit.getDefaultToolkit().getImage("plane.png");
-	public boolean willDisappear = false;
-	public double speed;
-	public Point2D direction;
-	private Rectangle boundBox = new Rectangle();
-	private Point2D startPoint;
-	abstract public void updateLocation();
-	abstract protected boolean isIntersect(AirWarObject obj);
-	public Rect rect;
-	public void paintComponent(Graphics g)
+public abstract class AirWarObject{
+	public Rect rect = new Rect();
+	public BufferedImage im = null;
+	public double rotation = 0;//旋转角度
+	public int level = 0;
+	public MainJPanel panel;
+	public int speed = 0;
+	public boolean isDisappear;//超出边界
+	public AirWarObject(MainJPanel _panel, Point _point)
 	{
-		super.paintComponent(g);
-		g.drawImage(im, rect.x, rect.y, rect.width, rect.height, null);
-	}
-	public boolean judgeIntersection(AirWarObject obj)
-	{
-		
-		if(this.boundBox.x +this.boundBox.width < obj.boundBox.x || this.boundBox.x > obj.boundBox.x + obj.boundBox.width ||
-				this.boundBox.y + this.boundBox.height < obj.boundBox.y || this.boundBox.y > obj.boundBox.y + obj.boundBox.height)
-			return false;
-		
-	
-		return this.isIntersect(obj);
+		this.panel = _panel;
+		rect.x = _point.x;
+		rect.y = _point.y;
 		
 	}
-	public AirWarObject(JFrame _frame, Point _rectangle, Rect imglocation) {
-		this.frame = _frame;
-		this.boundBox.x = _rectangle.x;
-		this.boundBox.y = _rectangle.y;
-		this.boundBox.width = imglocation.width;
-		this.boundBox.height = imglocation.height;
-		rect = imglocation;
-		this.setText("good morning");
-		ImageIcon icon = new ImageIcon("plane.png");
-	
-		this.setIcon(icon);
-		this.setBounds(this.boundBox.x, this.boundBox.y, this.boundBox.width, this.boundBox.height);
-	}
-	public boolean judgeWillDisappear()
+	public void draw(Graphics2D g)
 	{
-		Dimension d = frame.getSize();
-		if(this.boundBox.x + this.boundBox.width < 0 || this.boundBox.y + this.boundBox.height < 0 || this.boundBox.x > d.width || this.boundBox.y > this.boundBox.height )
-			return true;
-		return false;
+		AffineTransform at = new AffineTransform();
+		at.rotate(rotation, (Math.round(rect.width) >> 1), (Math.round(rect.height) >> 1));
+		at.translate(rect.x, rect.y);
+		g.drawImage(im, at, null);
+		rect.x += Math.sin(rotation) * speed;
+		rect.y += Math.cos(rotation) * speed;
+		if(rect.x > panel.getWidth() || rect.x + rect.width < 0 || rect.y > panel.getHeight() || rect.y +rect.height < 0)
+		{
+			this.isDisappear = true;
+		}
 	}
-	
-	
+	public void loadImage(String img)
+	{
+		try
+		{
+			this.im = ImageIO.read(new File(img));
+			rect.width = im.getWidth();
+			rect.height = im.getHeight();
+		}
+		catch(Exception e)
+		{
+			System.out.println("cannot load file:" + img);
+		}
+		
+	}
 
 }

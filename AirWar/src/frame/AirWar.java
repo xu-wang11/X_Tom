@@ -13,7 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import util.XmlParse;
-import UI.StartPanel;
+
+import UI.MainJPanel;
 
 
 public class AirWar{
@@ -21,13 +22,12 @@ public class AirWar{
 	 
 	 public static void main(String[] args)
 	 {
-		 XmlParse parse = new XmlParse();
-		 parse.getLocation();
+		 
 		 JFrame frame = new JFrame();
 		 frame.setResizable(false);
 		 //frame.setSize(480, 800);
 		 //frame.getContentPane().add(new JLabel("hehe"));
-		 StartPanel startPanel = new StartPanel(frame,  parse);
+		 MainJPanel startPanel = new MainJPanel(frame);
 		 //frame.add(startPanel);
 		 frame.setContentPane(startPanel);
 		 frame.show();

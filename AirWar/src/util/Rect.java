@@ -1,10 +1,10 @@
 package util;
 
 public class Rect {
-	public int x;
-	public int y;
-	public int width;
-	public int height;
+	public float x;
+	public float y;
+	public float width;
+	public float height;
 	public Rect()
 	{
 		
