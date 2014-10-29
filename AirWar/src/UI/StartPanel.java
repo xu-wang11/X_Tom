@@ -55,9 +55,9 @@ public class StartPanel extends JPanel {
 		JLabel label = new JLabel("hhe");
 		label.setBackground(Color.black);
 		label.setBounds(0, 0, 100, 100);
-		hero.setOpaque(false);
-		
-		this.add(label);
+		//hero.setOpaque(false);
+	
+		//this.add(label);
 		//JButton button = new JButton("hehe");
 		
 		//frame.setResizable(false);
@@ -69,13 +69,8 @@ public class StartPanel extends JPanel {
 	
 		
 	}
-	/**
-	public void paintComponent(Graphics g)
-	{
-		super.paintComponent(g);
-		//g.drawImage(im, 0, 0, null);
-		
-	}*/
+
+	
 	
 	public void update()
 	{

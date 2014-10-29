@@ -50,6 +50,10 @@ public abstract class AirWarObject extends JLabel {
 		this.boundBox.width = imglocation.width;
 		this.boundBox.height = imglocation.height;
 		rect = imglocation;
+		this.setText("good morning");
+		ImageIcon icon = new ImageIcon("plane.png");
+	
+		this.setIcon(icon);
 		this.setBounds(this.boundBox.x, this.boundBox.y, this.boundBox.width, this.boundBox.height);
 	}
 	public boolean judgeWillDisappear()
