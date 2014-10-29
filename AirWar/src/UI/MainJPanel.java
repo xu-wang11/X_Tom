@@ -17,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
@@ -39,10 +40,12 @@ public class MainJPanel extends JPanel implements KeyListener{
 	//private JButton button;
 	BufferedImage background = null;
 	Timer timer;
-	Set<AirWarObject> enermy = null;
+	Set<AirWarObject> enermy = new HashSet<AirWarObject>();
 	Set<AirWarObject> bullets = new HashSet<AirWarObject>();
 	Hero hero = null;
 	int level = -1;
+	protected MainJPanel that = this;
+	int keyDown = -1;//0, left, 1, right 2, up, 3 down, -1 not move.
 	public MainJPanel(final JFrame frame)
 	{
 		try
@@ -76,6 +79,7 @@ public class MainJPanel extends JPanel implements KeyListener{
 					level = 0;
 					btn1.hide();
 					btn2.hide();
+					timer.start();
 				}
 			}
 
@@ -135,14 +139,63 @@ public class MainJPanel extends JPanel implements KeyListener{
 		this.add(btn1);
 		this.add(btn2);
 		//this.updateUI();
-		timer = new Timer(100, new ActionListener(){
+		final Random r = new Random();
+		timer = new Timer(10, new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
+				
+				
+				int select = r.nextInt(50);
+				if(select == 1)
+				{
+					int width = that.getWidth();
+					int x = r.nextInt(width);
+					int y = r.nextInt(20);
+					Mine mine = new Mine(that , new Point(x, y));
+					enermy.add(mine);
+				}
+				select = r.nextInt(200);
+				if(select == 1)
+				{
+					int width = that.getWidth();
+					int x = r.nextInt(width);
+					int y = r.nextInt(20);
+					Destroyer mine = new Destroyer(that , new Point(x, y));
+					enermy.add(mine);
+				}
+				switch(that.keyDown)
+				{
+				case 0:
+					hero.moveLeft();
+					break;
+				case 1:
+					hero.moveRight();
+					break;
+				case 2:
+					hero.moveUp();
+					break;
+				case 3:
+					hero.moveDown();
+					break;
+				}
+				//check hero and enermy
+				Iterator it = enermy.iterator();
+				while(it.hasNext())
+				{
+					AirWarObject obj = it.next();
+					if(obj.isIntersection(hero))
+					{
+						
+					}
+				}
+				
 				updateUI();
 			}
 			
 		});
+		timer.setRepeats(true);
+		
 	
 		this.addKeyListener(this);
 		
@@ -157,19 +210,42 @@ public class MainJPanel extends JPanel implements KeyListener{
 		switch(i)
 		{
 			case KeyEvent.VK_A:
-				hero.moveLeft();
+				this.keyDown = 0;
 				break;
 			case KeyEvent.VK_D:
-				hero.moveRight();
+				this.keyDown = 1;
 				break;
 			case KeyEvent.VK_W:
-				hero.moveUp();
+				this.keyDown = 2;
 				break;
 			case KeyEvent.VK_S:
-				hero.moveDown();
+				this.keyDown = 3;
+				break;
+			case KeyEvent.VK_J:
+				bullets.add(new Plasma(this, new Point((int)Math.round(hero.rect.x+ hero.rect.width / 2 ), (int)Math.round(hero.rect.y))));
 				break;
 			case KeyEvent.VK_K:
-				bullets.add(new Plasma(this, new Point((int)Math.round(hero.rect.x+ hero.rect.width / 2 ), (int)Math.round(hero.rect.y))));
+				Iterator it = this.enermy.iterator();
+				AirWarObject obj = null;
+				while(it.hasNext())
+				{
+					AirWarObject ob = (AirWarObject)it.next();
+					if(ob.rect.y + ob.rect.height < hero.rect.y)
+					{
+						if(obj == null)
+						{
+							obj = ob;
+						}
+						else
+						{
+							if(ob.rect.y > obj.rect.y)
+							{
+								obj = ob;
+							}
+						}
+					}
+				}
+				bullets.add(new Missle(this, new Point((int)Math.round(hero.rect.x+ hero.rect.width / 2 ), (int)Math.round(hero.rect.y)),obj));
 				break;
 		}
 	}
@@ -193,12 +269,25 @@ public class MainJPanel extends JPanel implements KeyListener{
 	    		it.remove();
 	    	}
 	    }
-	    this.updateUI();
+	    it = this.enermy.iterator();
+	    while(it.hasNext())
+	    {
+	    	AirWarObject obj = (AirWarObject)it.next();
+	    	obj.draw(g2d);
+	    	if(obj.isDisappear)
+	    	{
+	    		it.remove();
+	    	}
+	    }
+	    //this.updateUI();
 	}
 
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+		if(e.getKeyCode() == KeyEvent.VK_A ||e.getKeyCode() == KeyEvent.VK_D || e.getKeyCode() == KeyEvent.VK_S || e.getKeyCode() == KeyEvent.VK_W)
+		{
+			this.keyDown = -1;
+		}
 	}
 
 	public void keyTyped(KeyEvent e) {

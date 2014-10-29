@@ -24,6 +24,7 @@ public class Hero extends AirWarObject {
 		this.getImage();
 		this.rect.width = 24;
 		this.rect.height = 24;
+		//this.direction.y = -1;
 	}
 	public void draw(Graphics2D g)
 	{
