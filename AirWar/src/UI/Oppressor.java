@@ -6,7 +6,7 @@ public class Oppressor extends AirWarObject {
 	public Oppressor(MainJPanel _panel, Point _p)
 	{
 		super(_panel, _p);
-		this.loadImage("res/oppressor.png");
+		this.loadImage("oppressor.png");
 	}
 
 }

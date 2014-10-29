@@ -7,13 +7,14 @@ import java.awt.LayoutManager;
 
 
 
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import util.XmlParse;
-
+import UI.AirWarObject;
 import UI.MainJPanel;
 
 
@@ -22,7 +23,7 @@ public class AirWar{
 	 
 	 public static void main(String[] args)
 	 {
-		 
+		 AirWarObject.loadResource();
 		 JFrame frame = new JFrame();
 		 frame.setResizable(false);
 		 //frame.setSize(480, 800);

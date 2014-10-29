@@ -10,7 +10,7 @@ public class Destroyer extends AirWarObject {
 		
 		super(_panel, _p);
 		blood = 10;
-		this.loadImage("res/destroyer.png");
+		this.loadImage("destroyer.png");
 		this.speed = 1;
 	}
 

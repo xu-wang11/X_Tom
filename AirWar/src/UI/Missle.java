@@ -9,7 +9,7 @@ public class Missle extends AirWarObject {
 	public Missle(MainJPanel _panel, Point _p, AirWarObject obj)
 	{
 		super(_panel, _p);
-		this.loadImage("res/missle.png");
+		this.loadImage("missle.png");
 		this.rect.x -= this.rect.width/2;
 		this.rect.y -= this.rect.height - 10;
 		target = obj;

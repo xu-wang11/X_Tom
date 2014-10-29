@@ -8,6 +8,6 @@ public class Bullet extends AirWarObject{
 	public Bullet(MainJPanel _panel, Point _p)
 	{
 		super(_panel, _p);
-		this.loadImage("res/bullet.png");
+		this.loadImage("bullet.png");
 	}
 }

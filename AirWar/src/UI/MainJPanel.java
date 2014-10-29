@@ -42,6 +42,7 @@ public class MainJPanel extends JPanel implements KeyListener{
 	Timer timer;
 	Set<AirWarObject> enermy = new HashSet<AirWarObject>();
 	Set<AirWarObject> bullets = new HashSet<AirWarObject>();
+	Set<AirWarObject> explosions = new HashSet<AirWarObject>();
 	Hero hero = null;
 	int level = -1;
 	protected MainJPanel that = this;
@@ -181,15 +182,38 @@ public class MainJPanel extends JPanel implements KeyListener{
 				}
 				//check hero and enermy
 				Iterator it = enermy.iterator();
+				
 				while(it.hasNext())
 				{
-					AirWarObject obj = it.next();
+					AirWarObject obj = (AirWarObject)it.next();
 					if(obj.isIntersection(hero))
 					{
-						
+						it.remove();
+						explosions.add(new Explosion(that, new Point((int)(hero.rect.x + hero.rect.width / 2), (int)(hero.rect.y + hero.rect.height/ 2)),1));
 					}
 				}
-				
+				it = enermy.iterator();
+				Iterator it1 = bullets.iterator();
+				while(it.hasNext())
+				{
+					AirWarObject obj = (AirWarObject)it.next();
+					while(it1.hasNext()){
+						AirWarObject obj1 = (AirWarObject)it1.next();
+						if(obj.isIntersection(obj1))
+						{
+							obj.blood --;
+							it1.remove();
+							if(obj.blood<=0)
+							{
+								explosions.add(new Explosion(that, new Point((int)(obj.rect.x + obj.rect.width / 2), (int)(obj.rect.y + obj.rect.height/ 2)),1));
+								it.remove();
+								break;
+							}
+						}
+						
+					}
+					
+				}
 				updateUI();
 			}
 			
@@ -252,7 +276,7 @@ public class MainJPanel extends JPanel implements KeyListener{
 	public void paintComponent(Graphics g)  
 	{  
 	    super.paintComponent(g);    
-	    g.drawImage(background,0,0,null);
+	    //g.drawImage(background,0,0,null);
 	    Graphics2D g2d = (Graphics2D)g;
 	    if(level>=0)
 	    {
@@ -279,6 +303,18 @@ public class MainJPanel extends JPanel implements KeyListener{
 	    		it.remove();
 	    	}
 	    }
+	    it = this.explosions.iterator();
+	    while(it.hasNext())
+	    {
+	    	Explosion obj = (Explosion)it.next();
+	    	obj.draw(g2d);
+	    	obj.life --;
+	    	if(obj.life == 0)
+	    	{
+	    		it.remove();
+	    	}
+	    }
+	    //explosions.clear();
 	    //this.updateUI();
 	}
 

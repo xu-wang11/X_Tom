@@ -63,7 +63,7 @@ public class Hero extends AirWarObject {
 	}
 	public void getImage()
 	{
-		this.loadImage("res/ship.png");
+		this.im = AirWarObject.imgs.get("ship.png");
 		CropImageFilter filter = new CropImageFilter(level* 24, 0, 24, 24);
 		Image img =  Toolkit.getDefaultToolkit().createImage(new FilteredImageSource(this.im.getSource(), filter));
 		BufferedImage tag = new BufferedImage(24, 24, BufferedImage.TYPE_INT_ARGB);  
