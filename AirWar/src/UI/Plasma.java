@@ -2,6 +2,8 @@ package UI;
 
 import java.awt.Point;
 
+import util.Point2F;
+
 public class Plasma extends AirWarObject{
 	
 	public Plasma(MainJPanel _panel, Point _p)
@@ -12,6 +14,7 @@ public class Plasma extends AirWarObject{
 		this.rect.y -= this.rect.height;
 		this.speed = 10;
 		this.direction.y = -1;
+		
 	}
 	
 

@@ -1,35 +1,29 @@
 package UI;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-
-import util.XmlParse;
 
 /**
  * 
@@ -46,6 +40,9 @@ public class MainJPanel extends JPanel implements KeyListener{
 	Hero hero = null;
 	int level = -1;
 	protected MainJPanel that = this;
+	int timerNumber = 0;
+	Oppressor oppessor = null;
+	public int score = 0;
 	int keyDown = -1;//0, left, 1, right 2, up, 3 down, -1 not move.
 	public MainJPanel(final JFrame frame)
 	{
@@ -145,12 +142,13 @@ public class MainJPanel extends JPanel implements KeyListener{
 
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				
-				
+				that.timerNumber ++;
+				if(that.timerNumber < 1000)
+				{
 				int select = r.nextInt(50);
 				if(select == 1)
 				{
-					int width = that.getWidth();
+					int width = that.getWidth() - 32;
 					int x = r.nextInt(width);
 					int y = r.nextInt(20);
 					Mine mine = new Mine(that , new Point(x, y));
@@ -159,11 +157,37 @@ public class MainJPanel extends JPanel implements KeyListener{
 				select = r.nextInt(200);
 				if(select == 1)
 				{
-					int width = that.getWidth();
+					int width = that.getWidth() - 43;
 					int x = r.nextInt(width);
 					int y = r.nextInt(20);
 					Destroyer mine = new Destroyer(that , new Point(x, y));
 					enermy.add(mine);
+				}
+				}
+				else
+				{
+					if(that.oppessor == null)
+					{
+						int width = that.getWidth() - 68;
+						int x = r.nextInt(width);
+						int y = r.nextInt(20);
+						that.oppessor = new Oppressor(that, new Point(x,y) );
+					}
+					else
+					{
+						int select = r.nextInt(200);
+						if(select == 1)
+						{
+						List<Mine> mines = that.oppessor.emit();
+						Iterator it3 = mines.iterator();
+						while(it3.hasNext())
+						{
+							that.enermy.add((AirWarObject) it3.next());
+						}
+						}
+						
+					}
+					
 				}
 				switch(that.keyDown)
 				{
@@ -181,6 +205,8 @@ public class MainJPanel extends JPanel implements KeyListener{
 					break;
 				}
 				//check hero and enermy
+				
+			
 				Iterator it = enermy.iterator();
 				
 				while(it.hasNext())
@@ -188,16 +214,26 @@ public class MainJPanel extends JPanel implements KeyListener{
 					AirWarObject obj = (AirWarObject)it.next();
 					if(obj.isIntersection(hero))
 					{
+						obj.isDisappear = true;
 						it.remove();
-						explosions.add(new Explosion(that, new Point((int)(hero.rect.x + hero.rect.width / 2), (int)(hero.rect.y + hero.rect.height/ 2)),1));
+						
+						explosions.add(new Explosion(that, new Point((int)(hero.rect.x + hero.rect.width / 2), (int)(hero.rect.y + hero.rect.height/ 2))));
+						hero = null;
+						that.updateUI();
+						gameEnd();
+						return;
 					}
 				}
+			
+				/**
 				it = enermy.iterator();
-				Iterator it1 = bullets.iterator();
+				
 				while(it.hasNext())
 				{
 					AirWarObject obj = (AirWarObject)it.next();
+					Iterator it1 = bullets.iterator();
 					while(it1.hasNext()){
+						
 						AirWarObject obj1 = (AirWarObject)it1.next();
 						if(obj.isIntersection(obj1))
 						{
@@ -205,7 +241,7 @@ public class MainJPanel extends JPanel implements KeyListener{
 							it1.remove();
 							if(obj.blood<=0)
 							{
-								explosions.add(new Explosion(that, new Point((int)(obj.rect.x + obj.rect.width / 2), (int)(obj.rect.y + obj.rect.height/ 2)),1));
+								explosions.add(new Explosion(that, new Point((int)(obj.rect.x + obj.rect.width / 2), (int)(obj.rect.y + obj.rect.height/ 2))));
 								it.remove();
 								break;
 							}
@@ -213,6 +249,73 @@ public class MainJPanel extends JPanel implements KeyListener{
 						
 					}
 					
+				}
+				*/
+				it = bullets.iterator();
+				while(it.hasNext())
+				{
+					AirWarObject obj = (AirWarObject) it.next();
+					Iterator it1 = enermy.iterator();
+					AirWarObject selected = null;
+					double minDis = 100000;
+					while(it1.hasNext())
+					{
+						AirWarObject obj1 = (AirWarObject) it1.next();
+						if(obj.isIntersection(obj1))
+						{
+							double x = obj1.rect.x + obj1.rect.width / 2 - obj.rect.x - obj.rect.width/2;
+							double y = obj1.rect.y + obj1.rect.height/ 2 - obj.rect.x - obj.rect.height/2;
+							if(x* x + y * y < minDis)
+							{
+								minDis = x* x + y * y;
+								selected = obj1;
+							}
+						}
+					}
+					if(selected != null)
+					{
+						selected.blood --;
+						if(selected.blood <= 0)
+						{
+							explosions.add(new Explosion(that, new Point((int)(selected.rect.x + selected.rect.width / 2), (int)(selected.rect.y + selected.rect.height/ 2))));
+							selected.isDisappear = true;
+							if(selected instanceof Missle)
+							{
+								that.score += 100;
+							}
+							else if(selected instanceof Mine)
+							{
+								that.score += 10;
+							}
+							else if(selected instanceof Oppressor)
+							{
+								that.score +=1000;
+							}
+							enermy.remove(selected);
+						}
+						
+						it.remove();
+					}
+				}
+				it = bullets.iterator();
+				if(that.oppessor != null)
+				{
+					while(it.hasNext())
+					{
+						AirWarObject obj = (AirWarObject)it.next();
+						if(obj.isIntersection(that.oppessor))
+						{
+							it.remove();
+							that.oppessor.blood --;
+							if(that.oppessor.blood <= 0)
+							{
+								explosions.add(new Explosion(that, new Point((int)(that.oppessor.rect.x + that.oppessor.rect.width / 2), (int)(that.oppessor.rect.y + that.oppessor.rect.height/ 2))));
+								that.score += 1000;
+								UpGradeOrExit();
+								return;
+							}
+						}
+					}
 				}
 				updateUI();
 			}
@@ -227,6 +330,56 @@ public class MainJPanel extends JPanel implements KeyListener{
 		this.setFocusable(true);
 	}
 	
+	public void UpGradeOrExit()
+	{
+		Object[] options = { "继续", "退出" };
+		int select = JOptionPane.showOptionDialog(null, "恭喜晋级！要进入下一关吗？", "Warning",
+		JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+		null, options, options[0]);
+		if(select == 0)
+		{
+			this.hero = new Hero(this, new Point(160, 400));
+			this.level ++;
+			this.timerNumber = 0;
+			this.enermy.clear();
+			this.bullets.clear();
+			this.oppessor = null;
+			this.setFocusable(true);
+		}
+		else
+		{
+			System.exit(0);
+		}
+		
+	}
+	public void gameEnd()
+	{
+		Object[] options = { "再来一局", "退出" };
+		int select = JOptionPane.showOptionDialog(null, "Click OK to continue", "Warning",
+		JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+		null, options, options[0]);
+		if(select == 0)
+		{
+			this.hero = new Hero(this, new Point(160, 400));
+			this.timerNumber = 0;
+			this.oppessor = null;
+			this.level = 0;
+			this.enermy.clear();
+			this.bullets.clear();
+			this.setFocusable(true);
+			
+			this.score = 0;
+		}
+		else
+		{
+			System.exit(0);
+		}
+         
+		
+		
+		
+		
+	}
 	public void keyPressed(KeyEvent arg0) {
 		// TODO Auto-generated method stub
 		int i = arg0.getKeyCode();
@@ -269,6 +422,10 @@ public class MainJPanel extends JPanel implements KeyListener{
 						}
 					}
 				}
+				if(obj == null && this.oppessor != null)
+				{
+					obj = this.oppessor;
+				}
 				bullets.add(new Missle(this, new Point((int)Math.round(hero.rect.x+ hero.rect.width / 2 ), (int)Math.round(hero.rect.y)),obj));
 				break;
 		}
@@ -276,13 +433,17 @@ public class MainJPanel extends JPanel implements KeyListener{
 	public void paintComponent(Graphics g)  
 	{  
 	    super.paintComponent(g);    
-	    //g.drawImage(background,0,0,null);
+	    g.drawImage(background,0,0,null);
 	    Graphics2D g2d = (Graphics2D)g;
-	    if(level>=0)
+	    drawScoreAndLevel(g2d);
+	    if(level>=0 && hero != null)
 	    {
 	    	hero.draw(g2d);
 	    }
-	    
+	    if(this.oppessor != null)
+	    {
+	    	this.oppessor.draw(g2d);
+	    }
 	    Iterator it = this.bullets.iterator();
 	    while(it.hasNext())
 	    {
@@ -314,6 +475,7 @@ public class MainJPanel extends JPanel implements KeyListener{
 	    		it.remove();
 	    	}
 	    }
+	    
 	    //explosions.clear();
 	    //this.updateUI();
 	}
@@ -331,6 +493,34 @@ public class MainJPanel extends JPanel implements KeyListener{
 		
 	} 
 	
+	public void drawScoreAndLevel(Graphics2D g)
+	{
+		AffineTransform at = new AffineTransform();
+		//at.rotate(rotation, (Math.round(rect.width) >> 1), (Math.round(rect.height) >> 1));
+		at.translate(5, 5);
+		g.drawImage(AirWarObject.imgs.get("Level.png"), at, null);
+		at.translate(44, 0);
+		int level = this.level + 1;
+		String str = String.valueOf(level);
+		for(int i = 0; i < str.length(); i ++)
+		{
+			char a = str.charAt(i);
+			int num = a - '0';
+			g.drawImage(AirWarObject.imgs.get("num" + num + ".png"), at, null);
+			at.translate(20, 0);
+		}
+		g.drawImage(AirWarObject.imgs.get("score.png"),at, null);
+		String scorestr = String.valueOf(this.score);
+		at.translate(46, 0);
+		for(int i = 0; i < scorestr.length(); i ++)
+		{
+			char a = scorestr.charAt(i);
+			int num = a - '0';
+			g.drawImage(AirWarObject.imgs.get("num" + num + ".png"), at, null);
+			at.translate(20, 0);
+		}
+		
+	}
 	
 	
 	

@@ -66,12 +66,36 @@ public abstract class AirWarObject{
 	}
 	boolean isIntersection(AirWarObject obj)
 	{
-		if(this.rect.x > obj.rect.x + obj.rect.width || this.rect.x + this.rect.width < obj.rect.x ||
-				this.rect.y > obj.rect.y + obj.rect.height || this.rect.y + this.rect.height < obj.rect.y)
+		if(obj instanceof Plasma || obj instanceof Missle || obj instanceof Hero) 
 		{
+			double x = obj.rect.x + obj.rect.width /2;
+			double y = obj.rect.y + obj.rect.height/2;
+			if(this.rect.x <=x && this.rect.x + this.rect.width >= x && this.rect.y <=y && this.rect.y + this.rect.height>=y)
+			{
+				return true;
+			}
 			return false;
 		}
-		return true;
+		else if(this instanceof Plasma || this instanceof Missle || obj instanceof Hero)
+		{
+			double x = this.rect.x + this.rect.width /2;
+			double y = this.rect.y + this.rect.height/2;
+			if(obj.rect.x <=x && obj.rect.x + obj.rect.width >= x && obj.rect.y <=y && obj.rect.y + obj.rect.height>=y)
+			{
+				return true;
+			}
+			return false;
+			
+		}
+		else
+		{
+			if(this.rect.x > obj.rect.x + obj.rect.width || this.rect.x + this.rect.width < obj.rect.x ||
+					this.rect.y > obj.rect.y + obj.rect.height || this.rect.y + this.rect.height < obj.rect.y)
+			{
+				return false;
+			}
+			return true;
+		}
 		
 	}
 	void exploid(Graphics2D g)
@@ -81,14 +105,14 @@ public abstract class AirWarObject{
 	public static void loadResource()
 	{
 		AirWarObject.imgs = new Hashtable<String, BufferedImage>();
-		String[] imgs = {"bullet.png", "destroyer.png", "exp2.png", "mine.png", "missle.png", "oppressor.png", "plasma.png", "ship.png"};
+		String[] imgs = {"bullet.png", "destroyer.png", "explosion_anim.png", "mine.png", "missle.png", "oppressor.png", "plasma.png", "ship.png", "num1.png", "num2.png", "num3.png", "num4.png", "num5.png", "num6.png", "num7.png", "num8.png", "num9.png", "num0.png", "Level.png", "score.png"};
 		for(int i = 0; i < imgs.length; i ++)
 		{
 			String img = imgs[i];
 			try
 			{
 				BufferedImage im1 = ImageIO.read(new File("res/" + img));
-				
+				BufferedImage tag = new BufferedImage(im1.getWidth(), im1.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);  
 				for(int k = 0; k < im1.getWidth(); k ++)
 				{
 					for(int j = 0; j < im1.getHeight(); j ++)
@@ -97,12 +121,12 @@ public abstract class AirWarObject{
 						 int R = (rgb & 0xff0000) >> 16;  
 					     int G = (rgb & 0xff00) >> 8;  
 					     int B = (rgb & 0xff);  
-						 if(R==0&& G==0&& B==0) 
+						 if(R == 0&& G == 0 && B == 0) 
 						 { 
 							 rgb =  0x00ffffff;  
-		                     im1.setRGB(k, j, rgb);
+		                     
 						 }
-						 
+						 tag.setRGB(k, j, rgb);
 					}
 				}
 				AirWarObject.imgs.put(img, im1);

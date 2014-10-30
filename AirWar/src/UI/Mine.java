@@ -7,7 +7,7 @@ public class Mine extends AirWarObject{
 	{
 		super(_panel, _p);
 		this.loadImage("mine.png");
-		this.speed = (float) 2;
+		this.speed = (float) 2 * (this.panel.level + 1);
 		this.rotation += Math.PI / 180 * 10;
 	}
 
